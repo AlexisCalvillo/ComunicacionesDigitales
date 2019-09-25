@@ -4,13 +4,13 @@ k1=6;
 k2=4;
 k3=1;
 k4=2;% Bits por símbolo
-EbNoVec = (2:10)';      % Eb/No
+EbNoVec = (1:15)';      % Eb/No
 spV = 100;              % Símbolos por ventana
 berEst1 = zeros(size(EbNoVec)); %Estimación de ber
 berEst2 = zeros(size(EbNoVec)); %Estimación de ber
 berEst3 = zeros(size(EbNoVec)); %Estimación de ber
 berEst4 = zeros(size(EbNoVec)); %Estimación de ber
-for n = 1:length(EbNoVec)
+parfor n = 1:length(EbNoVec)
     
     snrdB1 = EbNoVec(n) + 10*log10(k1);
     snrdB2 = EbNoVec(n) + 10*log10(k2);
@@ -26,7 +26,7 @@ for n = 1:length(EbNoVec)
     numBits3 = 0;
     numBits4 = 0;
     
-    while numErrs3<200 && numBits2 < 1e5
+    while numErrs3<400 && numBits2 < 1e7
         
                 dataIn1 = randi([0 1],spV,6);
                 dataSym1 = bi2de(dataIn1);
@@ -116,16 +116,17 @@ berTheory2 = berawgn(EbNoVec,'qam',16);
 berTheory3 = berawgn(EbNoVec,'psk',4,'nondiff');
 berTheory4 = berawgn(EbNoVec,'psk',2,'nondiff');
         
-semilogy(EbNoVec,berEst1,'*r')
-hold on
-semilogy(EbNoVec,berEst2,'og')
-semilogy(EbNoVec,berEst3,'xb')
-semilogy(EbNoVec,berEst4,'.m')
+
 semilogy(EbNoVec,berTheory1,'-r')
+hold on
 semilogy(EbNoVec,berTheory2,'-g')
 semilogy(EbNoVec,berTheory3,'-b')
 semilogy(EbNoVec,berTheory4,'--m')
-grid
-legend('Estimated BER','Theoretical BER')
+semilogy(EbNoVec,berEst1,'or')
+semilogy(EbNoVec,berEst2,'og')
+semilogy(EbNoVec,berEst3,'ob')
+semilogy(EbNoVec,berEst4,'om')
+grid on;
+legend('64QAM','16QAM','BPSK','QPSK')
 xlabel('Eb/No (dB)')
 ylabel('Bit Error Rate')
